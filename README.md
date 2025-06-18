@@ -28,7 +28,7 @@ This has been "coded" as a business requirement in two ways:
 
 - via explicit `go`-code business logic: first check that the `fundId` exists in the db, then that the `customerId` exists, and then persist. This approach allows for a) testing and b) explicit error messaging as to "why" the deposit may have failed
 
-- via foreign key requirements on the database schema. This approach "shouldnt be needed" but would be useful if another consumer were to attempt to write to the db. This could be used alone, but would have the drawback of having fairly cryptic error messages should a deposit write fail.
+- via foreign key requirements on the database schema (`edges` in `ent`). This approach "shouldnt be needed" but would be useful if another consumer were to attempt to write to the db. This could be used alone, but would have the drawback of having fairly cryptic error messages should a deposit write fail.
 
 ## Usage
 

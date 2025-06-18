@@ -7,8 +7,6 @@ ENV PROJECT_DIR=/app \
 
 WORKDIR /app
 
-
-
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -17,4 +15,4 @@ RUN go install github.com/githubnemo/CompileDaemon
 
 
 COPY . .
-ENTRYPOINT CompileDaemon --build="go build cmd/main.go" --command=./main
+#ENTRYPOINT CompileDaemon --build="go build cmd/main.go" --command=./main

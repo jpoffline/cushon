@@ -1,0 +1,22 @@
+name: Dockerized Go Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-in-docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t app .
+
+      - name: Run Go tests inside Docker container
+        run: |
+          docker run --rm app go test ./...
