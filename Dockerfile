@@ -13,6 +13,4 @@ RUN go mod download
 RUN go get github.com/githubnemo/CompileDaemon
 RUN go install github.com/githubnemo/CompileDaemon
 
-
 COPY . .
-#ENTRYPOINT CompileDaemon --build="go build cmd/main.go" --command=./main
