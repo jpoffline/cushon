@@ -8,11 +8,12 @@ Natwest Cushon
 
 ### Tech
 
-- `postgres` for data persistence
-- `golang` API to create the backend
+- `postgres` for data persistence - SQL rather than NoSQL seems to model the data structures pretty well.
+- `golang` API to create the backend - a wonderful, statically typed compiled language. Simple to work with, excellent development ecosystem.
 - `gin` as the REST framework
 - `ent` as a database ORM - this is a fast, "meta"-backed ORM giving type safety, good query generation. Can be bad if needing extremely complex efficient queries to be built.
 - `mockery` for mocking interfaces
+- `github workflow` for CI - running the test suite "on push" (this is a very basic CI-flow for now)
 
 There are three models: `fund`, `customer`, and `deposit` (these are represented in the ORM).
 
@@ -95,6 +96,12 @@ Note that the `customer_id` and `fund_id` must already exist in the system, othe
 
 ## Work for the future
 
-- logging
+- logging (e.g., integrate with a structured logger like `zap`)
 - middleware (e.g., auth, CORS)
 - improve architecture: decouple the `dto` models from the `ent` ones.
+- improve the CI piece for safer deployments (e.g., env-variable management)
+- enhancing the model meta data (e.g., data about the funds may be useful to filter on. This would require more business context)
+- setup githooks to run "unit tests" on commit (running integration tests can take too long, but should definitly be run in the full CI/CD suite)
+- setup branching/PR policies
+- move ent schema to own folder
+- implement extra functionality: e.g., bulk deposits (different amounts into different funds in one transaction)
