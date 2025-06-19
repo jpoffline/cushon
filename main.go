@@ -26,16 +26,16 @@ func main() {
 	docs.SwaggerInfo.BasePath = ""
 	defer store.Close()
 
-	r := gin.Default()
+	engine := gin.Default()
 
 	depositService := deposit.New(store)
 	customerService := customers.New(store)
 	fundsService := funds.New(store)
 
 	// Register user routes
-	handlers.RegisterFundRoutes(r, fundsService)
-	handlers.RegisterCustomerRoutes(r, customerService)
-	handlers.RegisterDepositRoutes(r, depositService)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	r.Run(":8080")
+	handlers.RegisterFundRoutes(engine, fundsService)
+	handlers.RegisterCustomerRoutes(engine, customerService)
+	handlers.RegisterDepositRoutes(engine, depositService)
+	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	engine.Run(":8080")
 }
