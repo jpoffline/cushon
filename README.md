@@ -4,13 +4,25 @@ Natwest Cushon
 
 - Submission: Jonathan Pearson
 
-## Approach
+This is my submission for the Natwest Cushon Software Engineer Recruitment Scenario.
 
-### Tech
+I have created an API which implements the workflow and restrictions laid out in the document provided to me. The implementation is as a golang webserver with postgres database data persistence.
+
+## Business requirement
+
+> A `customer` can make a `deposit` with an `amount` into a `fund`. The fund and customer must exist in the system in order for the deposit to be allowed.
+
+This has been implemented as a requirement within the solution in two ways:
+
+- via explicit `go`-code business logic: first check that the `fundId` exists in the db, then that the `customerId` exists, and then persist the deposit in the db. This approach allows for a) testing and b) explicit error messaging as to "why" the deposit may have failed.
+
+- via foreign key requirements on the database schema (`edges` in `ent`). This approach "shouldnt be needed" but would be useful if another consumer were to attempt to write to the db. This could be used alone, but would have the drawback of having fairly cryptic error messages should a deposit write fail.
+
+## Tech choices
 
 - `postgres` for data persistence - SQL rather than NoSQL seems to model the data structures pretty well.
 - `golang` API to create the backend - a wonderful, statically typed compiled language. Simple to work with, excellent development ecosystem.
-- `gin` as the REST framework
+- `gin` as the HTTP REST framework
 - `ent` as a database ORM - this is a fast, "meta"-backed ORM giving type safety, good query generation. Can be bad if needing extremely complex efficient queries to be built.
 - `mockery` for mocking interfaces
 - `github workflow` for CI - running the test suite "on push" (this is a very basic CI-flow for now)
@@ -20,16 +32,6 @@ There are three models: `fund`, `customer`, and `deposit` (these are represented
 The `fund`, `customer`, and `deposit` model instances are stored in a SQL database (rather than NoSQL) - the models lend themselves naturally to being tabular. Will also allow for simple update and cross-model queries.
 
 The overall architecture separates out implementation from usage where practical in such a simple example application. This allows for dependency injection, which significantly improves testability and enhances maintanance/extensibility.
-
-### Business requirement
-
-> A `customer` can make a `deposit` with an `amount` into a `fund`. The fund and customer must exist in the system in order for the deposit to be allowed.
-
-This has been "coded" as a business requirement in two ways:
-
-- via explicit `go`-code business logic: first check that the `fundId` exists in the db, then that the `customerId` exists, and then persist. This approach allows for a) testing and b) explicit error messaging as to "why" the deposit may have failed
-
-- via foreign key requirements on the database schema (`edges` in `ent`). This approach "shouldnt be needed" but would be useful if another consumer were to attempt to write to the db. This could be used alone, but would have the drawback of having fairly cryptic error messages should a deposit write fail.
 
 ## Usage
 
@@ -96,7 +98,7 @@ Note that the `customer_id` and `fund_id` must already exist in the system, othe
 
 ## Work for the future
 
-- logging (e.g., integrate with a structured logger like `zap`)
+- logging and tracing (e.g., integrate with a structured logger like `zap` and/or tooling like `datadog`)
 - middleware (e.g., auth, CORS)
 - improve architecture: decouple the `dto` models from the `ent` ones.
 - improve the CI piece for safer deployments (e.g., env-variable management)
@@ -105,3 +107,5 @@ Note that the `customer_id` and `fund_id` must already exist in the system, othe
 - setup branching/PR policies
 - move ent schema to own folder
 - implement extra functionality: e.g., bulk deposits (different amounts into different funds in one transaction)
+- error handling: different HTTP error codes for different reasons for failure
+- swapping out the frameworks and technologies - after heavy useage it may become apparent that, e.g., `ent` or `postgres` arent suitable solutions. The codebase as written can have these swapped out for other solutions (e.g., GORM, or MonogoDb as appropriate).
