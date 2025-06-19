@@ -18,11 +18,15 @@ This has been implemented as a requirement within the solution in two ways:
 
 - via foreign key requirements on the database schema (`edges` in `ent`). This approach "shouldnt be needed" but would be useful if another consumer were to attempt to write to the db. This could be used alone, but would have the drawback of having fairly cryptic error messages should a deposit write fail.
 
+When a deposit is made, we store `when` the deposit was made along with the deposit `amount`. We link to `funds` and `customers` via `uuid`s only, so that storage and interaction with PII is minimised.
+
 ## Tech choices
+
+I have made various decisions in this project:
 
 - `postgres` for data persistence - SQL rather than NoSQL seems to model the data structures pretty well.
 - `golang` API to create the backend - a wonderful, statically typed compiled language. Simple to work with, excellent development ecosystem.
-- `gin` as the HTTP REST framework
+- `gin` as the HTTP framework
 - `ent` as a database ORM - this is a fast, "meta"-backed ORM giving type safety, good query generation. Can be bad if needing extremely complex efficient queries to be built.
 - `mockery` for mocking interfaces
 - `github workflow` for CI - running the test suite "on push" (this is a very basic CI-flow for now)
@@ -32,6 +36,10 @@ There are three models: `fund`, `customer`, and `deposit` (these are represented
 The `fund`, `customer`, and `deposit` model instances are stored in a SQL database (rather than NoSQL) - the models lend themselves naturally to being tabular. Will also allow for simple update and cross-model queries.
 
 The overall architecture separates out implementation from usage where practical in such a simple example application. This allows for dependency injection, which significantly improves testability and enhances maintanance/extensibility.
+
+Interfaces are used - so that each service can define the interface of dependencies, and the application can give a service that implements the interface.
+
+Automated tests for some of the HTTP endpoints, and for the deposit service are provided - this has the business logic and so deserves good tests.
 
 ## Usage
 
