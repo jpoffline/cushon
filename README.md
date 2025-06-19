@@ -33,6 +33,10 @@ I have made various decisions in this project:
 
 There are three models: `fund`, `customer`, and `deposit` (these are represented in the ORM).
 
+- `fund` with fields `id`:uuid, `name`:str
+- `customer` with fields `id`:uuid, `name`:str
+- `deposit` with fields `id`:uuid, `fund_id`:uuid&fk, `customer_id`:uuid&fk, `amount`:float, `created_at`:datetime
+
 The `fund`, `customer`, and `deposit` model instances are stored in a SQL database (rather than NoSQL) - the models lend themselves naturally to being tabular. Will also allow for simple update and cross-model queries.
 
 The overall architecture separates out implementation from usage where practical in such a simple example application. This allows for dependency injection, which significantly improves testability and enhances maintanance/extensibility.
