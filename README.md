@@ -1,30 +1,28 @@
-# Investor deposit
-
-Natwest Cushon
+# Investor deposit API - Natwest Cushon
 
 - Submission: Jonathan Pearson
 
 This is my submission for the Natwest Cushon Software Engineer Recruitment Scenario.
 
-I have created an API which implements the workflow and restrictions laid out in the document provided to me. The implementation is as a golang webserver with postgres database data persistence.
+I have created a backend API which implements the workflow and restrictions laid out in the document provided to me. The implementation is as a golang webserver with postgres database data persistence.
 
 ## Business requirement
 
-> A `customer` can make a `deposit` with an `amount` into a `fund`. The fund and customer must exist in the system in order for the deposit to be allowed.
+> A `customer` can make a `deposit` of a specific `amount` into a `fund`. Both the customer and the fund must exist in the system for the deposit to be accepted.
 
-This has been implemented as a requirement within the solution in two ways:
+This functionality is enforced in two layers:
 
-- via explicit `go`-code business logic: first check that the `fundId` exists in the db, then that the `customerId` exists, and then persist the deposit in the db. This approach allows for a) testing and b) explicit error messaging as to "why" the deposit may have failed.
+1. **Application level validation in the go code** First check that the `fundId` exists in the db, then that the `customerId` exists, and then persist the deposit in the db. This approach allows for testing and explicit error messaging as to "why" the deposit may have failed.
 
-- via foreign key requirements on the database schema (`edges` in `ent`). This approach "shouldnt be needed" but would be useful if another consumer were to attempt to write to the db. This could be used alone, but would have the drawback of having fairly cryptic error messages should a deposit write fail.
+2. **Database-level integrity via foreign keys** While not strictly necessary when controlling writes through the API, this adds a layer of protection for direct database interactions. The tradeoff is that error messages from database constraint violations are less user-friendly.
 
 When a deposit is made, we store `when` the deposit was made along with the deposit `amount`. We link to `funds` and `customers` via `uuid`s only, so that storage and interaction with PII is minimised.
 
-## Tech choices
+## Tech stack
 
 I have made various decisions in this project:
 
-- `postgres` for data persistence - SQL rather than NoSQL seems to model the data structures pretty well.
+- `postgres` for data persistence - SQL rather than NoSQL seems to model the data structures pretty well. Would allow for indexing, scaling, e.g., in the future.
 - `golang` API to create the backend - a wonderful, statically typed compiled language. Simple to work with, excellent development ecosystem.
 - `gin` as the HTTP framework
 - `ent` as a database ORM - this is a fast, "meta"-backed ORM giving type safety, good query generation. Can be bad if needing extremely complex efficient queries to be built.
@@ -39,11 +37,9 @@ There are three models: `fund`, `customer`, and `deposit` (these are represented
 
 The `fund`, `customer`, and `deposit` model instances are stored in a SQL database (rather than NoSQL) - the models lend themselves naturally to being tabular. Will also allow for simple update and cross-model queries.
 
-The overall architecture separates out implementation from usage where practical in such a simple example application. This allows for dependency injection, which significantly improves testability and enhances maintanance/extensibility.
+The overall architecture separates out implementation from usage where practical in such a simple example application, via interfaces. This allows for dependency injection, which significantly improves testability and enhances maintanance/extensibility.
 
-Interfaces are used - so that each service can define the interface of dependencies, and the application can give a service that implements the interface.
-
-Automated tests for some of the HTTP endpoints, and for the deposit service are provided - this has the business logic and so deserves good tests.
+Unit and integration tests cover the deposit service and several HTTP endpoints, particularly those involving business logic.
 
 ## Usage
 
