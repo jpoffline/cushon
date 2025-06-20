@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    container_name: "jp_cushon"
+    container_name: "jp_cushon-api"
     build: .
     env_file:
       - .env
@@ -15,6 +15,7 @@ services:
         condition: service_healthy
     entrypoint: CompileDaemon --build="go build cmd/main.go" --command=./main
   db:
+    container_name: "jp_cushon-db"
     image: postgres:14
     environment:
       POSTGRES_DB: entdb
